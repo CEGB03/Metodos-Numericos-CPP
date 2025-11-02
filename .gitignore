@@ -1,0 +1,120 @@
+# Archivos ejecutables
+*.exe
+*.out
+*.app
+*.run
+
+# Archivos objeto y bibliotecas
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+
+# Archivos de compilación específicos de C++
+*.gch
+*.pch
+
+# Archivos de depuración
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Archivos temporales del sistema
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archivos de IDEs y editores
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de compilación específicos del proyecto
+build/
+bin/
+obj/
+Debug/
+Release/
+x64/
+x86/
+
+# Archivos de CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Archivos de configuración de compiladores
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.user
+
+# Archivos de datos temporales o de prueba
+test_data.txt
+temp_*.txt
+output_*.txt
+resultados_*.csv
+
+# Archivos específicos del proyecto (si existen)
+data.txt
+input.txt
+output.txt
+
+# Archivos de log
+*.log
+
+# Archivos de backup
+*.bak
+*.backup
+*.tmp
+
+# Archivos de core dumps
+core
+core.*
+
+# Archivos específicos de sistemas de build
+.ninja_deps
+.ninja_log
+compile_commands.json
+
+# Archivos de análisis estático
+*.scan
+cppcheck-results.xml
+
+# Archivos de documentación generada automáticamente
+html/
+latex/
+man/
+
+# Archivos de cobertura de código
+*.gcda
+*.gcno
+*.gcov
+coverage.info
+coverage/
+
+# Directorio de pruebas automáticas
+tests/temp/
+tests/output/
+
+# Archivos de memoria
+valgrind-*.log
+*.memcheck
