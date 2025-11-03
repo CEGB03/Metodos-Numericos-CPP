@@ -73,11 +73,6 @@ temp_*.txt
 output_*.txt
 resultados_*.csv
 
-# Archivos específicos del proyecto (si existen)
-data.txt
-input.txt
-output.txt
-
 # Archivos de log
 *.log
 

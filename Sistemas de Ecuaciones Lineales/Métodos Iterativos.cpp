@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <iostream>
 #include <math.h>
 #define FILAS 20
 #define COLUMNAS 20
@@ -55,7 +55,7 @@ void fileReader (double m[FILAS][COLUMNAS],int* filas, int* columnas){
 	fp = fopen("data.txt","r");
 	if ( fp == NULL )
 	{
-		cout << "No se puede abrir el archivo");
+		cout << "No se puede abrir el archivo";
 	}
 	int fila=0;
 	int columna;
