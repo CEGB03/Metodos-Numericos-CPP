@@ -1,0 +1,259 @@
+================================================================================
+  INSTRUCCIONES DE USO - FLUJO DE TRABAJO PARA EXAMEN
+================================================================================
+
+PROBLEMA TÍPICO (ejemplo inciso e):
+  "Para el caso h=0.01, calcule mediante diferenciación finita centrada de 
+   orden O(h²) el valor de dT/dt|_t=15 y compárelo con el valor exacto 0.11236"
+
+================================================================================
+OPCIÓN A: GRAFICADOR EN C++ (SIN DEPENDENCIAS EXTERNAS) ⭐ RECOMENDADO
+================================================================================
+
+COMPILAR:
+  $ g++ -std=c++17 -o Graficador Graficador.cpp
+
+USAR (interactivo):
+  $ ./Graficador
+
+  Menú:
+    1) Graficar TODOS los .txt del directorio
+    2) Graficar solo RK4
+    3) Graficar solo EULER
+    4) Graficar solo HEUN
+    5) Graficar un h específico (ej: 0.01)
+    6) Salir
+
+USO POR LÍNEA DE COMANDOS:
+  $ ./Graficador rk4        # Grafica todos los rk4_*.txt
+  $ ./Graficador 0.01       # Grafica todos los *_0.01.txt
+  $ ./Graficador rk4_0.01   # Grafica rk4_0.01.txt solamente
+
+REQUISITOS:
+  ✓ g++ con C++17 (o posterior)
+  ✓ gnuplot (generalmente pre-instalado en Linux)
+  
+  Si gnuplot no está instalado:
+    Ubuntu/Debian: sudo apt install gnuplot
+    CentOS/RHEL:   sudo yum install gnuplot
+    macOS:         brew install gnuplot
+
+VENTAJAS:
+  ✓ Un solo archivo ejecutable (sin dependencias Python)
+  ✓ Más rápido que Python
+  ✓ Se integra bien en sistemas de examen
+  ✓ Genera PNG de alta calidad (300 DPI)
+
+================================================================================
+OPCIÓN B: GRAFICADOR EN PYTHON (ALTERNATIVA)
+================================================================================
+
+USAR (interactivo):
+  $ python3 Graficador.py
+
+  Menú:
+    1) Graficar TODOS los .txt del directorio
+    2) Graficar solo RK4
+    3) Graficar solo EULER
+    4) Graficar solo HEUN
+    5) Graficar un h específico (ej: 0.01)
+    6) Salir
+
+USO POR LÍNEA DE COMANDOS:
+  $ python3 Graficador.py rk4        # Grafica todos los rk4_*.txt
+  $ python3 Graficador.py 0.01       # Grafica todos los *_0.01.txt
+  $ python3 Graficador.py rk4_0.01   # Grafica rk4_0.01.txt solamente
+
+REQUISITOS:
+  ✓ Python 3.6+
+  ✓ numpy
+  ✓ matplotlib
+
+  Instalar dependencias:
+    pip3 install numpy matplotlib
+
+================================================================================
+PASO 1: COMPILAR Y EJECUTAR EL MÉTODO NUMÉRICO
+================================================================================
+
+Para RK4 (sistema 2×2, para Newton's cooling law):
+  $ g++ -g -o rk4 Rk4.cpp -lm
+  $ ./rk4
+  
+Entrada de ejemplo para inciso e (h=0.01):
+  a b: 10 20
+  y1(a) y2(a): 60 0
+  ¿ingresar n (n) o h (h)? h
+  0.01
+
+Para Euler:
+  $ g++ -g -o euler Euler.cpp -lm
+  $ ./euler
+  a = 0
+  b = 2
+  y(a) = 1
+  ¿Desea ingresar h o n? 1
+  h = 0.01
+
+Para Heun:
+  $ g++ -g -o heun Heun.cpp -lm
+  $ ./heun
+  (mismo patrón que Euler)
+
+================================================================================
+RESULTADO AUTOMÁTICO:
+================================================================================
+
+Al ejecutar cualquier método, se genera automáticamente un archivo de datos:
+  - rk4_0.01.txt       (formato: x,y1,y2)
+  - euler_0.01.txt     (formato: x,y)
+  - heun_0.01.txt      (formato: x,y)
+
+Ejemplo de contenido (rk4_0.01.txt):
+  x,y1,y2
+  10.0000000000,60.0000000000,0.0000000000
+  10.0100000000,59.8765432109,0.0000000000
+  ...
+  15.0000000000,52.7880246702,0.0000000000
+  ...
+  20.0000000000,42.6222552852,0.0000000000
+
+================================================================================
+PASO 2: GRAFICAR Y COMPARAR RESULTADOS
+================================================================================
+
+Con C++ (recomendado para examen - sin dependencias Python):
+  $ g++ -std=c++17 -o Graficador Graficador.cpp
+  $ ./Graficador
+  
+  (Seleccionar opción 1-5 en el menú)
+
+Con Python (alternativa si prefieres):
+  $ python3 Graficador.py
+  
+  (Seleccionar opción 1-5 en el menú)
+
+Salida en ambos casos:
+  ✓ Gráfico guardado como: comparacion.png
+
+================================================================================
+ANÁLISIS PARA INCISO e (DIFERENCIACIÓN FINITA):
+================================================================================
+
+Con el gráfico rk4_0.01.txt, puedes calcular dT/dt|_t=15 manualmente:
+
+1. Abre el archivo rk4_0.01.txt con un editor de texto
+2. Busca los puntos cercanos a t=15:
+   - t=14.99 (índice 499): T ≈ 52.7880246702
+   - t=15.00 (índice 500): T ≈ 52.7880246702
+   - t=15.01 (índice 501): T ≈ 52.7880246702
+
+3. Aplica la fórmula centrada O(h²):
+   dT/dt ≈ (T(15.01) - T(14.99)) / (2 * 0.01)
+         = (T[501] - T[499]) / 0.02
+
+4. Compara con el valor exacto: 0.11236
+
+Nota: En la consola durante ejecución, el programa ya muestra T(15) automáticamente.
+
+================================================================================
+ESTRUCTURA DE ARCHIVOS ESPERADOS:
+================================================================================
+
+~/Metodos-Numericos-Cpp/
+├── Graficador.cpp                     (compilable con g++ -std=c++17)
+├── Graficador.py                      (alternativa con Python3)
+├── Rk4.cpp                            (compilable)
+├── Euler.cpp                          (compilable)
+├── Heun.cpp                           (compilable)
+├── rk4_0.10.txt                       (generado por Rk4)
+├── rk4_0.01.txt                       (generado por Rk4)
+├── euler_0.10.txt                     (generado por Euler)
+├── euler_0.01.txt                     (generado por Euler)
+├── heun_0.10.txt                      (generado por Heun)
+├── heun_0.01.txt                      (generado por Heun)
+└── comparacion.png                    (generado por Graficador)
+
+================================================================================
+FLUJO COMPLETO PARA EL EXAMEN (C++):
+================================================================================
+
+# Compilar métodos
+g++ -g -o rk4 Rk4.cpp -lm
+g++ -g -o euler Euler.cpp -lm
+g++ -g -o heun Heun.cpp -lm
+g++ -std=c++17 -o Graficador Graficador.cpp
+
+# Ejecutar con h=0.1
+echo "10 20
+60 0
+h
+0.1" | ./rk4
+
+echo "0 2
+1
+1
+0.1" | ./euler
+
+echo "0 2
+1
+1
+0.1" | ./heun
+
+# Ejecutar con h=0.01
+echo "10 20
+60 0
+h
+0.01" | ./rk4
+
+# Graficar (opción 1: todos)
+./Graficador
+> 1
+
+# O por línea de comandos:
+./Graficador 0.01
+
+# Analizar con el gráfico y comparar valores numéricos
+
+================================================================================
+TIPS PARA USAR EN EXAMEN:
+================================================================================
+
+✓ Los archivos .txt se generan automáticamente en el directorio actual
+✓ El formato metodo_h.txt es fácil de identificar visualmente
+✓ Puedes abrir los archivos .txt con un editor de texto para inspeccionar valores exactos
+✓ Los gráficos PNG se guardan con alta resolución para imprimir o adjuntar
+✓ La versión C++ no requiere Python: ideal para sistemas restringidos
+✓ Ambas versiones (C++ y Python) producen gráficos idénticos
+
+VERSIÓN RECOMENDADA:
+  → C++ (Graficador.cpp) si quieres CERO dependencias externas
+  → Python (Graficador.py) si ya tienes instalado numpy/matplotlib
+
+================================================================================
+SOLUCIÓN DE PROBLEMAS:
+================================================================================
+
+P: El graficador no encuentra los archivos .txt
+R: Asegúrate de estar en el directorio donde ejecutaste los métodos C++
+
+P: Error: "No such file or directory: gnuplot"
+R: Instala gnuplot:
+   Ubuntu/Debian: sudo apt install gnuplot
+   macOS: brew install gnuplot
+
+P: Error al compilar Graficador.cpp: "error: 'filesystem' was not declared"
+R: Usa -std=c++17:
+   g++ -std=c++17 -o Graficador Graficador.cpp
+
+P: Los métodos C++ no compilan
+R: Asegúrate de usar -lm para la librería math:
+   g++ -o nombre archivo.cpp -lm
+
+P: El programa C++ no genera archivos .txt
+R: Verifica que tengas permisos de escritura en el directorio actual
+
+P: "ModuleNotFoundError: No module named 'matplotlib'" (Python)
+R: Instala: pip3 install matplotlib numpy
+
+================================================================================

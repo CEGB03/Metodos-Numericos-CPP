@@ -2,7 +2,9 @@
 #include <vector>
 #include <cmath>
 #include <limits>
-#include <iomanip> // Para setprecision
+#include <iomanip>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 // Constantes del enunciado (puedes editarlas rápido aquí)
@@ -116,6 +118,30 @@ void rk4_sistema(double a, double b, int n, double y10, double y20) {
     cout << "╚═══════════════════════════════════════════════════════════════════════════════╝\n";
     print_at(15.0);
     print_at(20.0);
+
+    // ========== GUARDAR EN ARCHIVO ==========
+    // Crear nombre de archivo: rk4_h.txt (ej: rk4_0.01.txt)
+    ostringstream filename_stream;
+    filename_stream << fixed << setprecision(2) << "rk4_" << h << ".txt";
+    string filename = filename_stream.str();
+    
+    ofstream outfile(filename);
+    if (!outfile.is_open()) {
+        cerr << "Error: No se pudo crear el archivo " << filename << endl;
+        return;
+    }
+    
+    // Escribir encabezado
+    outfile << "x,y1,y2\n";
+    
+    // Escribir datos
+    outfile << fixed << setprecision(10);
+    for (int i = 0; i <= n; i++) {
+        outfile << x[i] << "," << y1[i] << "," << y2[i] << "\n";
+    }
+    
+    outfile.close();
+    cout << "\n✓ Datos guardados en: " << filename << "\n";
 }
 
 int main() {

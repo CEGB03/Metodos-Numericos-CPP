@@ -3,6 +3,8 @@
 #include <cmath>
 #include <limits>
 #include <iomanip>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 // ============================================================================
@@ -112,6 +114,30 @@ void euler_metodo(double a, double b, int n, double y0) {
     cout << "  Error máximo:   " << error_max << endl;
     cout << "  Error promedio: " << error_promedio << endl;
     cout << "\nNota: El Método de Euler es de orden O(h). Para mayor precisión, use RK4 o RK2." << endl;
+
+    // ========== GUARDAR EN ARCHIVO ==========
+    // Crear nombre de archivo: euler_h.txt (ej: euler_0.01.txt)
+    ostringstream filename_stream;
+    filename_stream << fixed << setprecision(2) << "euler_" << h << ".txt";
+    string filename = filename_stream.str();
+    
+    ofstream outfile(filename);
+    if (!outfile.is_open()) {
+        cerr << "\nError: No se pudo crear el archivo " << filename << endl;
+        return;
+    }
+    
+    // Escribir encabezado
+    outfile << "x,y\n";
+    
+    // Escribir datos
+    outfile << fixed << setprecision(10);
+    for (int i = 0; i <= n; i++) {
+        outfile << x[i] << "," << y[i] << "\n";
+    }
+    
+    outfile.close();
+    cout << "\n✓ Datos guardados en: " << filename << "\n";
 }
 
 int main() {

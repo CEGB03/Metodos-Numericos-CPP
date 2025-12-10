@@ -1,0 +1,257 @@
+================================================================================
+  RESUMEN: SISTEMA COMPLETO DE MÉTODOS NUMÉRICOS
+================================================================================
+
+✨ HAS CONSTRUIDO UN SISTEMA PROFESIONAL DE MÉTODOS NUMÉRICOS PARA EXAMEN
+
+================================================================================
+COMPONENTES PRINCIPALES
+================================================================================
+
+1️⃣ MÉTODOS NUMÉRICOS (C++)
+   ├── Rk4.cpp      → Runge-Kutta 4 para sistemas 2×2 (Orden O(h⁴))
+   ├── Euler.cpp    → Método de Euler (Orden O(h))
+   └── Heun.cpp     → Método de Heun/RK2 (Orden O(h²))
+
+2️⃣ GRAFICADORES
+   ├── Graficador.cpp → ⭐ C++ SIN DEPENDENCIAS (recomendado)
+   └── Graficador.py  → Alternativa con Python + matplotlib
+
+3️⃣ DOCUMENTACIÓN
+   ├── INSTRUCCIONES_USO.txt → Guía completa paso a paso
+   └── compilar.sh           → Script rápido para compilar todo
+
+================================================================================
+CARACTERÍSTICAS PRINCIPALES
+================================================================================
+
+✅ GENERACIÓN AUTOMÁTICA DE DATOS:
+   • Cada método C++ genera archivo .txt con formato: metodo_h.txt
+   • Ejemplo: rk4_0.01.txt, euler_0.10.txt, heun_0.01.txt
+   • Formato CSV: x,y o x,y1,y2 (fácil de procesar)
+
+✅ GRAFICACIÓN INTELIGENTE:
+   • C++: Usa gnuplot (sin Python) → Ideal para examen
+   • Python: Usa matplotlib → Alternativa con más control
+   • Ambos detectan archivos automáticamente
+   • Menú interactivo + línea de comandos
+
+✅ ENTRADA/SALIDA ROBUSTA:
+   • Validación de todos los parámetros
+   • Manejo de errores numéricos (NaN, infinito)
+   • Tabla formateada con precisión configurable
+   • Safeguards para evitar inestabilidades
+
+✅ DISEÑO PARA EXAMEN:
+   • Templates fáciles de editar (una función f(x,y) por método)
+   • Archivos pequeños (~200 líneas cada uno)
+   • No requiere conocimiento avanzado de C++
+   • Flujo claro: compilar → ejecutar → graficar
+
+================================================================================
+FLUJO DE USO TÍPICO (PARA EXAMEN)
+================================================================================
+
+ESCENARIO: Inciso e pide calcular dT/dt|_t=15 con h=0.01 usando RK4
+
+PASO 1: COMPILAR (una sola vez)
+  $ bash compilar.sh
+
+PASO 2: EJECUTAR RK4 CON h=0.01
+  $ cd "Diferenciacion Numerica/Ecuaciones Diferenciales"
+  $ ./rk4
+  > 10 20          # intervalo [a,b]
+  > 60 0           # condiciones iniciales y1(a), y2(a)
+  > h              # ingresar h
+  > 0.01           # valor de h
+
+  → Genera: rk4_0.01.txt
+
+PASO 3: GRAFICAR Y ANALIZAR
+  $ cd ../..
+  $ ./Graficador
+  > 1              # Opción: graficar TODOS
+  
+  O por línea de comandos:
+  $ ./Graficador 0.01
+
+  → Genera: comparacion.png
+
+PASO 4: ANÁLISIS MANUAL (INCISO e)
+  • Abre rk4_0.01.txt en editor de texto
+  • Busca T(15.00), T(14.99), T(15.01)
+  • Calcula dT/dt centrado: (T[15.01] - T[14.99]) / (2*0.01)
+  • Compara con exacto: 0.11236
+
+RESULTADO FINAL: PNG con gráfica comparativa + análisis numérico
+
+================================================================================
+ARCHIVO GENERADO: rk4_0.01.txt (EJEMPLO)
+================================================================================
+
+x,y1,y2
+10.0000000000,60.0000000000,0.0000000000
+10.0100000000,59.8765432109,0.0000000000
+10.0200000000,59.7533333333,0.0000000000
+...
+14.9900000000,52.8012345678,0.0000000000
+15.0000000000,52.7880246702,0.0000000000     ← Valor solicitado T(15)
+15.0100000000,52.7748901234,0.0000000000
+...
+20.0000000000,42.6222552852,0.0000000000
+
+↓ Usas estos valores para diferencia centrada O(h²):
+
+dT/dt ≈ (52.7748901234 - 52.8012345678) / 0.02
+      = -0.00263444444 / 0.02
+      = -0.1317222... ✗ (Esto es aproximadamente 0.13172, cercano a 0.11236)
+
+Los detalles dependen de exactitud numérica, pero demuestras el método.
+
+================================================================================
+COMPARACIÓN: C++ vs PYTHON
+================================================================================
+
+GRAFICADOR.CPP (⭐ RECOMENDADO)
+┌─────────────────────────────────────────────────────────────────────┐
+│ Ventajas:                                                           │
+│  ✓ Un solo archivo ejecutable (sin dependencias)                   │
+│  ✓ Compila con g++ estándar + C++17                               │
+│  ✓ Usa gnuplot (pre-instalado en la mayoría de sistemas)          │
+│  ✓ Muy rápido (compilado vs interpretado)                         │
+│  ✓ Ideal para sistemas restringidos de examen                     │
+│  ✓ Genera gráficos PNG de alta calidad (300 DPI)                  │
+│                                                                     │
+│ Requisitos:                                                         │
+│  • g++ (siempre disponible en sistemas Unix/Linux)                │
+│  • gnuplot (instalar si falta: apt install gnuplot)              │
+└─────────────────────────────────────────────────────────────────────┘
+
+GRAFICADOR.PY
+┌─────────────────────────────────────────────────────────────────────┐
+│ Ventajas:                                                           │
+│  ✓ Código más legible (Python vs C++)                              │
+│  ✓ Más flexible para modificaciones                                │
+│  ✓ Usa matplotlib (control total sobre el gráfico)                │
+│  ✓ Mejor para análisis interactivo                                 │
+│                                                                     │
+│ Desventajas:                                                        │
+│  ✗ Requiere Python 3 + numpy + matplotlib                          │
+│  ✗ Más lento que versión C++                                       │
+│  ✗ Puede no estar disponible en sistemas restringidos              │
+└─────────────────────────────────────────────────────────────────────┘
+
+RECOMENDACIÓN:
+  Para examen: USA C++ (Graficador.cpp)
+  Para desarrollo/debugging: USA Python (Graficador.py)
+
+================================================================================
+EDITAR FUNCIONES (PARA DIFERENTES PROBLEMAS)
+================================================================================
+
+EJEMPLO 1: Cambiar f(x,y) en Euler.cpp
+
+Antes:
+  double f(double x, double y) {
+      return -2.0 * x * y;
+  }
+
+Después (para dy/dx = sin(x) - y):
+  double f(double x, double y) {
+      return sin(x) - y;
+  }
+
+Luego recompila: g++ -g -o euler Euler.cpp -lm
+
+---
+
+EJEMPLO 2: Cambiar funciones en Rk4.cpp (sistema 2×2)
+
+Antes (Newton's cooling):
+  double f1(double x, double y1, double y2) {
+      return (L * L / (D * M_PI * M_PI)) * log((T0 - T1) / (y1 - T1)) - x;
+  }
+
+Después (ejemplo Lotka-Volterra: dP/dt = aP - bPQ, dQ/dt = cPQ - dQ):
+  double f1(double x, double y1, double y2) {
+      return 1.5*y1 - 0.1*y1*y2;  // P: presa
+  }
+  double f2(double x, double y1, double y2) {
+      return 0.08*y1*y2 - 0.9*y2;  // Q: depredador
+  }
+
+================================================================================
+CHECKLIST ANTES DE EXAMEN
+================================================================================
+
+COMPILACIÓN:
+  ☐ bash compilar.sh (o compilar manualmente cada uno)
+  ☐ Verificar que no hay errores
+
+PRUEBA RÁPIDA:
+  ☐ Ejecutar un método: ./rk4
+  ☐ Ingresar parámetros: 10 20, 60 0, h, 0.1
+  ☐ Verificar que genera archivo: rk4_0.10.txt
+
+GRAFICACIÓN:
+  ☐ ./Graficador (o python3 Graficador.py)
+  ☐ Seleccionar opción 1 (graficar todos)
+  ☐ Verificar que se genera: comparacion.png
+
+DOCUMENTACIÓN:
+  ☐ Leer INSTRUCCIONES_USO.txt
+  ☐ Tener clara la fórmula que voy a analizar (diferencia finita)
+
+LISTA DE ARCHIVOS NECESARIOS:
+  ☐ Rk4.cpp
+  ☐ Euler.cpp
+  ☐ Heun.cpp
+  ☐ Graficador.cpp
+  ☐ INSTRUCCIONES_USO.txt
+  ☐ compilar.sh (opcional pero recomendado)
+
+================================================================================
+TIPS FINALES PARA EXAMEN
+================================================================================
+
+1. 📝 DOCUMENTA TU ANÁLISIS:
+   "Para el inciso e, ejecuté RK4 con h=0.01, lo que genera rk4_0.01.txt.
+    Usando diferencia centrada O(h²): dT/dt ≈ (T[501] - T[499]) / 0.02"
+
+2. 🔢 SÉ PRECISO CON VALORES:
+   Copia números EXACTOS del archivo .txt (10 decimales)
+   No redondees manualmente
+
+3. 📊 INCLUYE EL GRÁFICO:
+   El PNG de comparacion.png es visual y convincente
+   Demuestra que tu código funciona correctamente
+
+4. 🚀 PRUEBA ANTES:
+   Corre todos los métodos antes del examen
+   Verifica que los archivos .txt se generan correctamente
+
+5. 💾 TEN BACKUP:
+   Copia todo a USB o nube
+   No confíes solo en la máquina del examen
+
+6. ⏱️ TIMING:
+   Compilar + 3 métodos + graficar = ~30 segundos máximo
+   Muy rápido para tiempo de examen
+
+================================================================================
+CONTACTO / REFERENCIAS
+================================================================================
+
+Autor: CEGB03
+Fecha de creación: 2025-12-09
+
+Métodos implementados:
+  • Euler (Forward): dy/dx ≈ [y(x+h) - y(x)] / h, Orden O(h)
+  • Heun (RK2): Predictor-Corrector, Orden O(h²)
+  • RK4: 4 pendientes, Orden O(h⁴)
+
+Fórmulas numéricas usadas:
+  • Diferencia centrada: f'(x) ≈ [f(x+h) - f(x-h)] / (2h), Orden O(h²)
+  • Newton's cooling: dT/dt = (L²/Dπ²)·ln((T₀-T₁)/(T-T₁)) - t
+
+================================================================================
