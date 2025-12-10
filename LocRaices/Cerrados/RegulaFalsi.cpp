@@ -22,7 +22,7 @@ double funcion(double x) {
 
 void regulaFalsi() {
 
-    double a, b, tolerancia, c, error;
+    double a, b, tolerancia, c, cAnterior, error;
     int contador = 0;
 
     cout << "Ingrese el límite inferior del intervalo: ";
@@ -33,10 +33,15 @@ void regulaFalsi() {
     cin >> tolerancia;
 
         if (funcion(a) * funcion(b) < 0.0) {
+            cAnterior = a;
             do {
                 contador++;
 
                 c = (a*funcion(b) - b*funcion(a)) / (funcion(b) - funcion(a));
+                
+                error = fabs(c - cAnterior);
+                cAnterior = c;
+                
                 if (funcion(a) * funcion(c) > 0) {
                     a = c;
                 } else if (funcion(a) * funcion(c) < 0) {
@@ -44,17 +49,16 @@ void regulaFalsi() {
                 } else {
                     break;
                 }
-
-                error = (b - a) / 2;
+                
 
             } while (error > tolerancia);
 
-            cout << "\nResultado de la raíz: %.10lf", c);
-            cout << "\nError estimado: %.10lf", error);
-            cout << "\nCantidad de iteraciones: %d\n", contador);
+            cout << "\nResultado de la raíz: " << c << endl;
+            cout << "\nError estimado: " << error << endl;
+            cout << "\nCantidad de iteraciones: " << contador << endl;
             
         } else {
-            cout << "\nNo hay raíz o hay un número par de ellas\n");
+            cout << "\nNo hay raíz o hay un número par de ellas\n";
         }
     
 }

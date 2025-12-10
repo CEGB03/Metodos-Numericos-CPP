@@ -31,32 +31,48 @@ int main(int argc, char *argv[]) {
 
 void mostrarMenu(){
     int opcion;
-    cout << "\n╔══════════════════════════════════════════════════╗" << endl;
-    cout << "║        INTEGRACIÓN NUMÉRICA (NEWTON-COTES)       ║" << endl;
-    cout << "╚══════════════════════════════════════════════════╝" << endl;
-    cout << "0. Ver documentación de métodos" << endl;
-    cout << "1. Trapecio - Función conocida" << endl;
-    cout << "2. Trapecio - Tabla de datos" << endl;
-    cout << "3. Simpson Compuesto - Función conocida" << endl;
-    cout << "4. Simpson Compuesto - Tabla de datos" << endl;
-    cout << "5. Salir" << endl;
-    cout << "Seleccione una opción: ";
-    cin >> opcion;
+    bool salir = false;
     
-    switch(opcion){
-        case 0: mostrarDocumentacion(); mostrarMenu(); break;
-        case 1: trapecioFuncion(); mostrarMenu(); break;
-        case 2: trapecioTabla(); mostrarMenu(); break;
-        case 3: simpsonCompuestoFuncion(); mostrarMenu(); break;
-        case 4: simpsonCompuestoTabla(); mostrarMenu(); break;
-        case 5: cout << "¡Hasta luego!" << endl; break;
-        default: cout << "Opción inválida" << endl; mostrarMenu(); break;
+    while(!salir) {
+        cout << "\n╔══════════════════════════════════════════════════╗" << endl;
+        cout << "║        INTEGRACIÓN NUMÉRICA (NEWTON-COTES)       ║" << endl;
+        cout << "╚══════════════════════════════════════════════════╝" << endl;
+        cout << "0. Ver documentación de métodos" << endl;
+        cout << "1. Trapecio - Función conocida" << endl;
+        cout << "2. Trapecio - Tabla de datos" << endl;
+        cout << "3. Simpson Compuesto - Función conocida" << endl;
+        cout << "4. Simpson Compuesto - Tabla de datos" << endl;
+        cout << "5. Salir" << endl;
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+        
+        switch(opcion){
+            case 0: mostrarDocumentacion(); break;
+            case 1: trapecioFuncion(); break;
+            case 2: trapecioTabla(); break;
+            case 3: simpsonCompuestoFuncion(); break;
+            case 4: simpsonCompuestoTabla(); break;
+            case 5: cout << "¡Hasta luego!" << endl; salir = true; break;
+            default: cout << "❌ Opción inválida" << endl; break;
+        }
     }
 }
 
 void leerDatos(double m[FILAS][2], int* filas){
     cout << "\nIngrese número de puntos: ";
     cin >> *filas;
+    
+    if(*filas <= 0) {
+        cout << "❌ Error: Número de puntos debe ser positivo" << endl;
+        *filas = 0;
+        return;
+    }
+    
+    if(*filas > FILAS) {
+        cout << "⚠️ Advertencia: Máximo " << FILAS << " puntos permitidos. Se limitará a " << FILAS << endl;
+        *filas = FILAS;
+    }
+    
     cout << "\nIngrese los datos (x, f(x)):" << endl;
     for(int i = 0; i < *filas; i++){
         cout << "Punto " << (i+1) << " - x: ";
@@ -64,6 +80,20 @@ void leerDatos(double m[FILAS][2], int* filas){
         cout << "Punto " << (i+1) << " - f(x): ";
         cin >> m[i][1];
     }
+    
+    // Ordenar datos por x en forma ascendente (burbuja simple)
+    for(int i = 0; i < *filas - 1; i++) {
+        for(int j = 0; j < *filas - 1 - i; j++) {
+            if(m[j][0] > m[j+1][0]) {
+                double temp_x = m[j][0], temp_y = m[j][1];
+                m[j][0] = m[j+1][0];
+                m[j][1] = m[j+1][1];
+                m[j+1][0] = temp_x;
+                m[j+1][1] = temp_y;
+            }
+        }
+    }
+    cout << "\n✅ Datos ordenados por x" << endl;
 }
 
 /**
@@ -83,6 +113,16 @@ void trapecioFuncion(){
     cin >> b;
     cout << "Número de subintervalos (n): ";
     cin >> n;
+    
+    if(n <= 0) {
+        cout << "❌ Error: El número de subintervalos debe ser positivo" << endl;
+        return;
+    }
+    
+    if(a >= b) {
+        cout << "❌ Error: El límite inferior (a) debe ser menor que el superior (b)" << endl;
+        return;
+    }
     
     double h = (b-a)/n;
     double suma = funcion(a) + funcion(b);
@@ -127,6 +167,11 @@ void trapecioTabla(){
     cout << "\n🔧 REGLA DEL TRAPECIO - TABLA DE DATOS" << endl;
     cout << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" << endl;
     leerDatos(m, &filas);
+    
+    if(filas <= 0){
+        cout << "❌ Error: No se pudieron leer los datos" << endl;
+        return;
+    }
     
     if(filas < 2){
         cout << "❌ Error: Se necesitan al menos 2 puntos" << endl;
@@ -192,6 +237,16 @@ void simpsonCompuestoFuncion(){
     cout << "Número de subintervalos (n): ";
     cin >> n;
     
+    if(n <= 0) {
+        cout << "❌ Error: El número de subintervalos debe ser positivo" << endl;
+        return;
+    }
+    
+    if(a >= b) {
+        cout << "❌ Error: El límite inferior (a) debe ser menor que el superior (b)" << endl;
+        return;
+    }
+    
     if(n % 2 != 0) {
         cout << "❌ Error: El número de intervalos debe ser PAR para Simpson" << endl;
         cout << "💡 Sugerencia: Use " << (n+1) << " o " << (n-1) << " intervalos" << endl;
@@ -247,6 +302,11 @@ void simpsonCompuestoTabla(){
     cout << "\n🔧 REGLA DE SIMPSON COMPUESTO - TABLA DE DATOS" << endl;
     cout << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" << endl;
     leerDatos(m, &filas);
+    
+    if(filas <= 0){
+        cout << "❌ Error: No se pudieron leer los datos" << endl;
+        return;
+    }
     
     if(filas < 3){
         cout << "❌ Error: Se necesitan al menos 3 puntos para Simpson" << endl;

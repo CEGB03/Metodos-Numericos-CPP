@@ -34,64 +34,90 @@ int main(int argc, char *argv[]) {
 void regresionLineal(double m[ROWS][2], int filas){
 	double a[2][2] = {{0}};
 	double b[2] = {0};
-	double yProm = 0, r = 0, Sr = 0, St = 0, sum = 0; 
-	a[1][1] = filas;
+	double yProm = 0, r2 = 0, Sr = 0, St = 0, sum = 0; 
+	
+	// Construir el sistema de ecuaciones normales
+	// [Σx²  Σx ] [a₁]   [Σxy]
+	// [Σx   n  ] [a₀] = [Σy ]
+	a[0][0] = 0; // Σx²
+	a[0][1] = 0; // Σx
+	a[1][0] = 0; // Σx
+	a[1][1] = filas; // n
+	
 	for(int i = 0 ; i < filas ; i++){
-		a[0][0]+= pow(m[i][0],2);
-		a[0][1]+= m[i][0];
-		a[1][0]+= m [i][0];
-		b[0]+= m[i][0] * m[i][1];
-		b[1] += m[i][1]; 
+		a[0][0] += pow(m[i][0], 2); // Σx²
+		a[0][1] += m[i][0];          // Σx
+		a[1][0] += m[i][0];          // Σx
+		b[0] += m[i][0] * m[i][1];   // Σxy
+		b[1] += m[i][1];             // Σy
 	}
 
-	cout << "\nMatriz:\n";
+	cout << "\nSistema de Ecuaciones Normales:\n";
 	for(int i = 0 ; i < 2 ; i++){
 		for(int j = 0 ; j < 2 ; j++){
 			cout << "\t" << a[i][j];
 		}
-		cout << "\t" << b[i] << endl;
+		cout << "\t=\t" << b[i] << endl;
 	}
 	
 	double* x = (double*)malloc(2 * sizeof(double));
 	triangulacion(a, b, x, 2);
 
-	cout << "\n\n\n\nConjunto solución: \n";
-	for (int i = 0; i < 2; ++i) {
-		cout << "\nX" << i << " = " << x[i] << "\n";
-	}
+	cout << "\n\n=== RESULTADOS DE LA REGRESIÓN LINEAL ===\n";
+	cout << "\nCoeficientes:\n";
+	cout << "a₁ (pendiente) = " << x[0] << "\n";
+	cout << "a₀ (ordenada)  = " << x[1] << "\n";
+	cout << "\nEcuación de la recta: y = " << x[0] << "x + " << x[1] << "\n";
  	
+	// Calcular promedio de y
 	for(int i = 0; i < filas ; i++){
-		yProm+= m[i][1];
-		
+		yProm += m[i][1];
 	}
-	yProm = yProm/filas; //check
+	yProm = yProm/filas;
+	
+	// Calcular St (variación total)
 	for(int i = 0; i < filas ; i++){
-		St+= pow((m[i][1] - yProm) , 2);
-		
+		St += pow((m[i][1] - yProm), 2);
 	}
 	
-	for(int i = 0; i<filas ; i++){
-		sum+= pow((m[i][1] - (x[0]*m[i][0]+x[1])) , 2);
+	// Calcular suma de errores al cuadrado
+	for(int i = 0; i < filas ; i++){
+		double y_ajustada = x[0] * m[i][0] + x[1];
+		sum += pow((m[i][1] - y_ajustada), 2);
 	}
 	
-	Sr = sqrt(sum/filas);//check
-	cout << Sr;
+	// Error estándar de la regresión (con corrección por grados de libertad)
+	Sr = sqrt(sum / (filas - 2));
 	
-	r = (St - sum)/St;//check
+	// Coeficiente de determinación r²
+	r2 = (St - sum) / St;
 
-	cout << r;
-	error(x, m, 2, filas);
+	cout << "\n=== ESTADÍSTICAS ===\n";
+	cout << "Promedio de y: " << yProm << "\n";
+	cout << "Variación total (St): " << St << "\n";
+	cout << "Suma de errores² (Sr): " << sum << "\n";
+	cout << "Error estándar: " << Sr << "\n";
+	cout << "Coeficiente de determinación (r²): " << r2 << "\n";
+	cout << "Coeficiente de correlación (r): " << sqrt(r2) << "\n";
+	
 	free(x);
 }
 void triangulacion(double a[2][2], double b[2], double x[ROWS], int filas){
 	for (int i = 0 ; i < (filas - 1) ; i++){
 		pivot(a, b, filas , i);
+		
+		// Verificar pivote
+		if(fabs(a[i][i]) < 1e-10){
+			cout << "Error: Pivote nulo en fila " << i << endl;
+			return;
+		}
+		
 		for (int j = i + 1; j < filas; j++) {
-			double factor = -a[j][i] / a[i][i];
-			for (int k = 0; k < filas; ++k) {
-				a[j][k] = a[i][k] * factor + a[j][k];
+			double factor = a[j][i] / a[i][i];
+			for (int k = i; k < filas; ++k) {
+				a[j][k] = a[j][k] - factor * a[i][k];
 			}
-			b[j] = b[i] * factor + b[j];
+			b[j] = b[j] - factor * b[i];
 		}
 	}
 	
@@ -119,52 +145,34 @@ void retrostutitucion(double a[2][2], double b[2], double x[ROWS], int filas){
 }
 			
 void pivot(double a[2][2], double b[2], int filas, int i){
-	if (fabs(a[i][i]) < 0.0001) {
-		for (int j = i + 1; j < filas; j++) {
-			if (fabs(a[j][i]) > fabs(a[i][i])) {
-				for (int k = i; k < filas; ++k) {
-					cout << "Se realizo pivoteo" << endl;
-					double swap = a[i][k];
-					a[i][k] = a[j][k];
-					a[j][k] = swap;
-				}
-				double swap = b[i];
-				b[i] = b[j];
-				b[j] = swap;
-			}
+	// Buscar el pivote de mayor magnitud
+	int maxRow = i;
+	double maxVal = fabs(a[i][i]);
+	
+	for (int j = i + 1; j < filas; j++) {
+		if (fabs(a[j][i]) > maxVal) {
+			maxVal = fabs(a[j][i]);
+			maxRow = j;
 		}
+	}
+	
+	// Intercambiar filas si se encontró un pivote mejor
+	if (maxRow != i) {
+		for (int k = i; k < filas; ++k) {
+			double swap = a[i][k];
+			a[i][k] = a[maxRow][k];
+			a[maxRow][k] = swap;
+		}
+		double swap = b[i];
+		b[i] = b[maxRow];
+		b[maxRow] = swap;
 	}
 }
 				
 double determinante(double a[2][2], double b[2], double x[ROWS], int filas){
-	double norma = 1;
+	double det = 1;
 	for(int i = 0; i < filas ; i++){
-		norma = norma * a[i][i];
+		det = det * a[i][i];
 	}
-	return norma;
-}
-void error (double x[FILAS], double m[FILAS][2], int gradoP, int filas){
-	double yb = 0;
-	double e = 0;
-	double ecm;
-	double st = 0;
-	double r;
-	for (int i = 0; i < filas; i++) {
-		double sum = 0;
-		for (int j = 0; j < gradoP; j++) {
-			sum = sum + x[j]*pow(m[i][0], j);
-		}
-		e = e + pow(m[i][1]-sum, 2);
-		yb = yb + m[i][1];
-	}
-	yb = yb/(filas+1);
-	for (int i = 0; i < filas; i++) {
-		st = st + pow(m[i][1]-yb, 2);
-	}
-	r = sqrt(fabs(e-st)/st);
-	ecm = sqrt(e/filas);
-	cout << "\nEl error es de: " << e << endl;
-	cout << "El error cuadratico medio es de: " << ecm << endl;
-	cout << "st: " << st << endl;
-	cout << "El coeficiente de correlacion es: " << r << endl;
+	return det;
 }

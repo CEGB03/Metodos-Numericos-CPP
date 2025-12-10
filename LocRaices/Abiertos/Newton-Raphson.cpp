@@ -57,11 +57,11 @@ private:
     }
 
     /**
-     * Error porcentual según fórmula del enunciado
+     * Error relativo porcentual
      */
     double errorPorcentual(double xNuevo, double xViejo) {
-        if (abs(xNuevo + xViejo) < 1e-12) return 0.0; // Evitar división por cero
-        return abs(xNuevo - xViejo) / abs(xNuevo + xViejo) * 100.0;
+        if (abs(xNuevo) < 1e-12) return 0.0; // Evitar división por cero
+        return abs(xNuevo - xViejo) / abs(xNuevo) * 100.0;
     }
 
     /**

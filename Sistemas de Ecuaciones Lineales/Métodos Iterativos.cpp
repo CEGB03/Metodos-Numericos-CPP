@@ -155,6 +155,9 @@ void jacobi(double a[FILAS][COLUMNAS] , double b[FILAS] , int filas){
 	}
 	
 	cout << "]\n La cantidad de iteraciones fueron: " << iteraciones << "\n El error es de " << error << endl;
+	
+	free(xNuevo);
+	free(xViejo);
 }
 void gaussSeidel (double a[FILAS][COLUMNAS] , double b[FILAS], int filas){
 	cout << "\n\n***Ha seleccionado método de Gauss Seidel***\n\n";
@@ -187,22 +190,15 @@ void gaussSeidel (double a[FILAS][COLUMNAS] , double b[FILAS], int filas){
 		iteraciones++;
 		for (int i = 0; i < filas; i++) {
 			suma = 0;
-			if(i == 0){
-				for(int j = 1 ; j < filas ; j++){
-					suma+= a[i][j] * xNuevo[j];
-				}
-				xNuevo[i] = (b[i] - suma)/a[i][i]; 
-			}else{
-				for(int j = 0 ; j < i  ; j++){
-					suma += a[i][j] * xNuevo[j];
-				}
-				
-				for(int j = i+1 ; j < filas ; j++){
-					suma+= a[i][j] * xViejo[j]; 
-				}
-				
-				xNuevo[i] = (b[i] - suma)/a[i][i];
+			// Usar valores ya actualizados (xNuevo) para j < i
+			for(int j = 0 ; j < i ; j++){
+				suma += a[i][j] * xNuevo[j];
 			}
+			// Usar valores de iteración anterior (xViejo) para j > i
+			for(int j = i+1 ; j < filas ; j++){
+				suma += a[i][j] * xViejo[j]; 
+			}
+			xNuevo[i] = (b[i] - suma)/a[i][i];
 		}
 		
 		// Manejo del error
@@ -224,6 +220,9 @@ void gaussSeidel (double a[FILAS][COLUMNAS] , double b[FILAS], int filas){
 	}
 	
 	cout << "]\n La cantidad de iteraciones fueron: " << iteraciones << "\n El error es de " << error << endl;
+	
+	free(xNuevo);
+	free(xViejo);
 }
 	
 void relajacion (double a[FILAS][COLUMNAS] , double b[FILAS], int filas){
@@ -259,24 +258,18 @@ void relajacion (double a[FILAS][COLUMNAS] , double b[FILAS], int filas){
 		iteraciones++;
 		for (int i = 0; i < filas; i++) {
 			suma = 0;
-			if(i == 0){
-				for(int j = 1 ; j < filas ; j++){
-					suma+= a[i][j] * xNuevo[j];
-				}
-				xNuevo[i] = (b[i] - suma)/a[i][i];
-				xNuevo[i] = factor_relajacion * xNuevo[i] + (1-factor_relajacion) * xViejo[i]; 
-			}else{
-				for(int j = 0 ; j < i  ; j++){
-					suma += a[i][j] * xNuevo[j];
-				}
-				
-				for(int j = i+1 ; j < filas ; j++){
-					suma+= a[i][j] * xViejo[j]; 
-				}
-				
-				xNuevo[i] = (b[i] - suma)/a[i][i];
-				xNuevo[i] = factor_relajacion * xNuevo[i] + (1-factor_relajacion) * xViejo[i]; 
+			// Usar valores ya actualizados (xNuevo) para j < i
+			for(int j = 0 ; j < i ; j++){
+				suma += a[i][j] * xNuevo[j];
 			}
+			// Usar valores de iteración anterior (xViejo) para j > i
+			for(int j = i+1 ; j < filas ; j++){
+				suma += a[i][j] * xViejo[j]; 
+			}
+			// Calcular valor temporal sin relajación
+			double x_temp = (b[i] - suma)/a[i][i];
+			// Aplicar factor de relajación
+			xNuevo[i] = factor_relajacion * x_temp + (1-factor_relajacion) * xViejo[i];
 		}
 		
 		// Manejo del error
@@ -298,27 +291,38 @@ void relajacion (double a[FILAS][COLUMNAS] , double b[FILAS], int filas){
 	}
 	
 	cout << "]\n La cantidad de iteraciones fueron: " << iteraciones << "\n El error es de " << error << endl;
-
+	
+	free(xNuevo);
+	free(xViejo);
 }
 bool diagonalmenteDominante(double a[FILAS][COLUMNAS], int filas){
-	double suma = 0; 
-	int counter = 0;
+	double suma = 0;
+	bool esDominante = true;
+	
 	for(int i = 0; i < filas ; i++){
+		// Verificar ceros en la diagonal
+		if(fabs(a[i][i]) < 1e-10){
+			cout << "\nError: Cero en la diagonal, fila " << (i+1) << endl;
+			return false;
+		}
+		
 		suma = 0; 
-		counter++;
 		for(int j = 0 ; j < filas ; j++){
-			if(j!=i){
-				suma+= fabs(a[i][j]);
+			if(j != i){
+				suma += fabs(a[i][j]);
 			}
 		}
 		
-		if(fabs(a[i][i]) < suma)
-			cout << "\nLa matriz no es diagonalmente dominante. Fila: " << counter;
-
-		if(a[i][i] == 0){
-			cout << "\nCeros en la diagonal" << endl;
-			return false;
+		if(fabs(a[i][i]) < suma){
+			cout << "\nAdvertencia: Fila " << (i+1) << " no es diagonalmente dominante" << endl;
+			cout << "|a[" << (i+1) << "][" << (i+1) << "]| = " << fabs(a[i][i]) << " < " << suma << " (suma de |resto|)" << endl;
+			esDominante = false;
 		}
 	}
-	return true;
+	
+	if(!esDominante){
+		cout << "\nLa matriz NO es diagonalmente dominante. Los métodos pueden no converger." << endl;
+	}
+	
+	return true; // Permitir continuar pero con advertencia
 }

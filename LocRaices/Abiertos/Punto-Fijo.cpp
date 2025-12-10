@@ -107,10 +107,10 @@ int main()
  */
 double g(double x)
 { 
-    return 2;  // ← CAMBIAR ESTA LÍNEA
+    return exp(-x);  // ← CAMBIAR ESTA LÍNEA
     
     /* FUNCIÓN f(x) CORRESPONDIENTE (solo para referencia):
-     * Para g(x) = x*x-0.5 f(x) es: f(x) = x*x-0.5
+     * Para g(x) = e^(-x), f(x) es: f(x) = e^(-x) - x
      * 
      * Si cambias g(x), asegúrate de que corresponda a tu f(x) deseada:
      * - Si tienes f(x) = x² - 4, usa g(x) = 2 o g(x) = 4/x
@@ -126,7 +126,7 @@ double g(double x)
  * que g(x) es correcta. Para g(x) = x*x-0.5x) sería:
  */
 double f_verificacion(double x) {
-    return x*x-0.5;  // f(x) = x*x-0.5
+    return exp(-x) - x;  // f(x) = e^(-x) - x
     /* OTROS EJEMPLOS:
      * return x*x - 4;              // Para g(x) = 2 o g(x) = 4/x
      * return x*x - 2;              // Para g(x) = sqrt(2) o g(x) = 2/x
@@ -146,8 +146,8 @@ void PuntoFijo()
     printf("╔══════════════════════════════════════════════════════════════╗\n");
     printf("║                    MÉTODO DE PUNTO FIJO                      ║\n");
     printf("║                                                              ║\n");
-    printf("║  Función actual: g(x) = x*x-0.5  (modo Purbea)                ║\n");
-    printf("║  Busca raíz de: f(x) = e^(-x) - x = 0                        ║\n");
+    printf("║  Función actual: g(x) = e^(-x)                               ║\n");
+    printf("║  Busca raíz de: f(x) = e^(-x) - x = 0                       ║\n");
     printf("╚══════════════════════════════════════════════════════════════╝\n\n");
     
     printf("Ingrese la tolerancia (ej: 0.0001): "); 
@@ -190,7 +190,7 @@ void PuntoFijo()
         }
 
         // Límite de seguridad
-        if (contador > 50000) {
+        if (contador > 50) {
             printf("└─────────────────────────────────────────────────────────────┘\n");
             printf("\n⚠️  Límite de 50 iteraciones alcanzado\n");
             break;

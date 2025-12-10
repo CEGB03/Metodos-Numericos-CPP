@@ -160,11 +160,11 @@ void triangulacion(double a[FILAS][FILAS], double b[FILAS], double x[FILAS], int
 	for (int i = 0 ; i < (filas - 1) ; i++){
 		pivot(a, b, filas , i);
 		for (int j = i + 1; j < filas; j++) {
-			double factor = -a[j][i] / a[i][i];
-			for (int k = 0; k < filas; ++k) {
-				a[j][k] = a[i][k] * factor + a[j][k];
-			}
-			b[j] = b[i] * factor + b[j];
+            double factor = a[j][i] / a[i][i];
+            for (int k = 0; k < filas; ++k) {
+                a[j][k] = a[j][k] - factor * a[i][k];
+            }
+            b[j] = b[j] - factor * b[i];
 		}
 	}
 	

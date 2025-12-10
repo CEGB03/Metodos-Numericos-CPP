@@ -94,7 +94,7 @@ void assembleMatrix(double nodes[MAXROWS][MAXCOLUMNS], double matrix[MAXROWS][MA
 	}
 	
 	// Imprimir matriz
-	cout << endl << "Matriz de Vandermonde" << endl;
+	cout << endl << "Matriz de Ecuaciones Normales" << endl;
 	for (int indexA = 0; indexA <= degree; indexA++) {
 		for (int indexB = 0; indexB <= degree; indexB++) {
 			cout << matrix[indexA][indexB] << " ";
@@ -104,25 +104,26 @@ void assembleMatrix(double nodes[MAXROWS][MAXCOLUMNS], double matrix[MAXROWS][MA
 	}
 }
 	
-	int gaussianElimination(double matrix[MAXROWS][MAXCOLUMNS2], double b[MAXROWS], double x[MAXROWS], int rows) {
-		// Eliminaci�n gaussiana
-		
+	int gaussianElimination(double matrix[MAXROWS][MAXCOLUMNS2], double b[MAXROWS], double x[MAXROWS], int degree) {
+		// Eliminación gaussiana
+		// El sistema tiene (degree+1) ecuaciones y (degree+1) incógnitas
+		int n = degree + 1; // Dimensión del sistema
 		double aux;
 		double factor;
 		float e = pow(10, -3);
 		
-		// Triangulaci�n superior
-		for (int indexA = 0; indexA <= rows; indexA++) {
+		// Triangulación superior
+		for (int indexA = 0; indexA < n-1; indexA++) {
 			
 			// Pivoteo
 			int swap = 0;
 			if (fabs(matrix[indexA][indexA]) < e) {
 				
-				for (int indexB = indexA + 1; indexB <= rows - 1; indexB++) {
+				for (int indexB = indexA + 1; indexB < n; indexB++) {
 					
 					if (fabs(matrix[indexB][indexA]) > fabs(matrix[indexA][indexA])) {
 						
-						for (int indexC = indexA; indexC <= rows - 1; indexC++) {
+						for (int indexC = indexA; indexC < n; indexC++) {
 							aux = matrix[indexA][indexC];
 							matrix[indexA][indexC] = matrix[indexB][indexC];
 							matrix[indexB][indexC] = aux;
@@ -143,42 +144,42 @@ void assembleMatrix(double nodes[MAXROWS][MAXCOLUMNS], double matrix[MAXROWS][MA
 				}
 			}
 			
-			for (int indexB = indexA + 1; indexB <= rows; indexB++) {
-				factor = (-matrix[indexB][indexA]) / (matrix[indexA][indexA]);
+			for (int indexB = indexA + 1; indexB < n; indexB++) {
+				factor = matrix[indexB][indexA] / matrix[indexA][indexA];
 				
-				for (int indexC = indexA; indexC <= rows; indexC++)
-					matrix[indexB][indexC] = matrix[indexB][indexC] + factor * matrix[indexA][indexC];
-					b[indexB] = b[indexB] + factor * b[indexA];
+				for (int indexC = indexA; indexC < n; indexC++)
+					matrix[indexB][indexC] = matrix[indexB][indexC] - factor * matrix[indexA][indexC];
+					b[indexB] = b[indexB] - factor * b[indexA];
 			}
 		}
 		
 		// Imprime matriz triangular
 		cout << endl << "La Matriz triangular superior quedo: " << endl;
-		for (int indexA = 0; indexA <= rows; indexA++) {
+		for (int indexA = 0; indexA < n; indexA++) {
 			
-			for (int indexB = 0; indexB <= rows; indexB++) {
+			for (int indexB = 0; indexB < n; indexB++) {
 				cout << matrix[indexA][indexB] << " ";
 			}
 			cout << b[indexA] << endl;
 		}
 		
-		// Sustituci�n regresiva
+		// Sustitución regresiva
 		double suma;
-		x[rows] = b[rows] / matrix[rows][rows];
+		x[n-1] = b[n-1] / matrix[n-1][n-1];
 		
-		for (int indexA = rows - 1; indexA >= 0; indexA--) {
+		for (int indexA = n - 2; indexA >= 0; indexA--) {
 			suma = b[indexA];
 			
-			for (int indexB = indexA + 1; indexB <= rows; indexB++) {
+			for (int indexB = indexA + 1; indexB < n; indexB++) {
 				suma -= matrix[indexA][indexB] * x[indexB];
 			}
 			
 			x[indexA] = (suma) / matrix[indexA][indexA];
 		}
 		
-		cout << endl << "********Soluciones********" << endl;
-		for (int index = 0; index <= rows; index++)
-			cout << endl << "x" << index << "=" << x[index];
+		cout << endl << "********Soluciones (Coeficientes)********" << endl;
+		for (int index = 0; index < n; index++)
+			cout << endl << "a" << index << " = " << x[index];
 		cout << endl;
 		
 		return 0;
@@ -235,12 +236,11 @@ void assembleMatrix(double nodes[MAXROWS][MAXCOLUMNS], double matrix[MAXROWS][MA
 				for (int indexB = 0; indexB <= degree; indexB++) {
 					sum = sum + (x[indexB] * pow(nodes[indexA][0], indexB));
 				}
-				sr = sr + pow((nodes[indexA][1] - sum), 2);
-			}
-			
-			ecm = sqrt(sr/rows);
-			
-			// C�lculo del error estandar estimado (desviaci�n est�ndar)
+			sr = sr + pow((nodes[indexA][1] - sum), 2);
+		}
+		
+		// Error cuadrático medio con corrección por grados de libertad
+		ecm = sqrt(sr / (rows - (degree + 1)));			// C�lculo del error estandar estimado (desviaci�n est�ndar)
 			syx = sqrt(sr / ((double) rows - (degree + 1)));
 			
 			// C�lculo del coeficiente de determinaci�n

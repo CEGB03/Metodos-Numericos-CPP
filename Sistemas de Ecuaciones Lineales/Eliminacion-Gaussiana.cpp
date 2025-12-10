@@ -92,12 +92,19 @@ void matrizB (double b[FILAS],double m[FILAS][COLUMNAS], int filas, int columnas
 void triangulacion(double a[FILAS][COLUMNAS], double b[FILAS], double x[FILAS], int filas){
 	for (int i = 0 ; i < (filas - 1) ; i++){
 		pivot(a, b, filas , i);
+		
+		// Verificar que el pivote no sea cero después del intercambio
+		if(fabs(a[i][i]) < 1e-10){
+			cout << "Error: No se puede continuar, pivote nulo en fila " << i << endl;
+			return;
+		}
+		
 		for (int j = i + 1; j < filas; j++) {
-			double factor = -a[j][i] / a[i][i];
-			for (int k = 0; k < filas; ++k) {
-				a[j][k] = a[i][k] * factor + a[j][k];
+			double factor = a[j][i] / a[i][i];
+			for (int k = i; k < filas; ++k) {
+				a[j][k] = a[j][k] - factor * a[i][k];
 			}
-			b[j] = b[i] * factor + b[j];
+			b[j] = b[j] - factor * b[i];
 		}
 	}
 	
@@ -126,29 +133,37 @@ void retrostutitucion(double a[FILAS][COLUMNAS], double b[FILAS], double x[FILAS
     }
 }
 void pivot(double a[FILAS][COLUMNAS], double b[FILAS], int filas, int i){
-	if (fabs(a[i][i]) < 0.0001) {
-		for (int j = i + 1; j < filas; j++) {
-			if (fabs(a[j][i]) > fabs(a[i][i])) {
-				for (int k = i; k < filas; ++k) {
-					cout <<"Se realizo pivoteo" << endl;
-					double swap = a[i][k];
-					a[i][k] = a[j][k];
-					a[j][k] = swap;
-				}
-				double swap = b[i];
-				b[i] = b[j];
-				b[j] = swap;
-			}
+	// Buscar el pivote de mayor magnitud (pivoteo parcial)
+	int maxRow = i;
+	double maxVal = fabs(a[i][i]);
+	
+	for (int j = i + 1; j < filas; j++) {
+		if (fabs(a[j][i]) > maxVal) {
+			maxVal = fabs(a[j][i]);
+			maxRow = j;
 		}
+	}
+	
+	// Intercambiar filas si se encontró un pivote mejor
+	if (maxRow != i) {
+		cout << "Se realizo pivoteo: intercambio fila " << i << " con fila " << maxRow << endl;
+		for (int k = i; k < filas; ++k) {
+			double swap = a[i][k];
+			a[i][k] = a[maxRow][k];
+			a[maxRow][k] = swap;
+		}
+		double swap = b[i];
+		b[i] = b[maxRow];
+		b[maxRow] = swap;
 	}
 }
 double determinante(double a[FILAS][COLUMNAS], double b[FILAS], double x[FILAS], int filas){
-	double norma = 1;
+	double det = 1;
 	for(int i = 0; i < filas ; i++){
-		norma = norma * a[i][i];
+		det = det * a[i][i];
 	}
-	cout <<"\nLa norma es: " << norma << endl;
-	return norma;
+	cout <<"\nEl determinante es: " << det << endl;
+	return det;
 }
 
 

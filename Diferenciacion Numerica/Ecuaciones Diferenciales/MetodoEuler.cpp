@@ -27,6 +27,8 @@ int main(int argc, char *argv[]) {
 		y[i+1] = y[i] + h*f(x[i],y[i]);
 		cout << "\nX" << i+1 << " = " << x[i+1] << "\nY" << i+1 << " = " << y[i+1];
 	}
+	free(x);
+	free(y);
 	return 0;
 }
 
